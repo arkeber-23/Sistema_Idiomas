@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package vista;
 
 import controlador.CursoDao;
@@ -20,6 +16,7 @@ public class frmNota extends javax.swing.JInternalFrame {
     DocenteDao docenteDao = new DocenteDao();
     NotaDao notaDao = new NotaDao();
     CursoDao cursoDao = new CursoDao();
+    Nota n;
 
     public frmNota() {
         initComponents();
@@ -47,6 +44,7 @@ public class frmNota extends javax.swing.JInternalFrame {
         cmbCurso = new javax.swing.JComboBox<>();
         btnGuardar = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        lblMensaje = new javax.swing.JLabel();
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -61,10 +59,21 @@ public class frmNota extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Id_Estudiante", "Estudiante", "Calificación"
+                "Id Nota", "Id_Estudiante", "Estudiante", "Calificación"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(tblRegistro);
+        if (tblRegistro.getColumnModel().getColumnCount() > 0) {
+            tblRegistro.getColumnModel().getColumn(0).setResizable(false);
+        }
 
         jPanel4.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
@@ -140,29 +149,49 @@ public class frmNota extends javax.swing.JInternalFrame {
         jLabel3.setText("Registro Notas");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 20, 230, 110));
 
+        lblMensaje.setFont(new java.awt.Font("Tahoma", 2, 14)); // NOI18N
+        lblMensaje.setForeground(new java.awt.Color(0, 255, 51));
+        lblMensaje.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jPanel1.add(lblMensaje, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 120, 280, 30));
+
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-
+String mensaje ="";
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 
         //Insertar Datos     
         for (int i = 0; i < tblRegistro.getRowCount(); i++) {//recorre las filas en la tabla
-            int idEstudiante = Integer.parseInt(tblRegistro.getValueAt(i, 0).toString());
+
+            int idNota = Integer.parseInt(tblRegistro.getValueAt(i, 0).toString());
+            int idEstudiante = Integer.parseInt(tblRegistro.getValueAt(i, 1).toString());
             int idDocente = cmbDocente.getItemAt(cmbDocente.getSelectedIndex()).getIdDocente();
             int idCurso = cmbCurso.getItemAt(cmbCurso.getSelectedIndex()).getIdCurso();
-            double nota = Double.parseDouble(tblRegistro.getValueAt(i, 2).toString());
-            Nota n = new Nota(idEstudiante, idDocente, idCurso, nota);
-            notaDao.insertarNotas(n);
+            double nota = Double.parseDouble(tblRegistro.getValueAt(i, 3).toString());
+
+            //Validacion De datos 
+            n = new Nota(idEstudiante);
+            int rs = notaDao.validarNotasDuplicadas(n);
+            //Si hay datos dupicados loa actualiza
+            if (rs > 0) {
+                //hacemos una actualizacion
+                notaDao.actualizarNota(idDocente, idCurso, idEstudiante, nota, idNota);
+                mensaje = "Notas Actualizadas..";
+            } else {
+                //Ingresamos nota
+                n = new Nota(idEstudiante, idDocente, idCurso, nota);
+                notaDao.insertarNotas(n);
+                mensaje = "Notas Ingresadas";
+            }
+            lblMensaje.setText(mensaje);
         }
 
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void cmbCursoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbCursoItemStateChanged
         // TODO add your handling code here:
-
         DefaultTableModel dtm = (DefaultTableModel) tblRegistro.getModel();
         if (evt.getStateChange() == ItemEvent.SELECTED) {
             int idDocente = cmbDocente.getItemAt(cmbDocente.getSelectedIndex()).getIdDocente();
@@ -172,7 +201,7 @@ public class frmNota extends javax.swing.JInternalFrame {
             Object[] fila;
             for (Nota ingresarNotasEstudiante : ingresarNotasEstudiantes) {
 
-                fila = new Object[]{ingresarNotasEstudiante.getIdEstudinate(),
+                fila = new Object[]{ingresarNotasEstudiante.getIdNota(), ingresarNotasEstudiante.getIdEstudinate(),
                     ingresarNotasEstudiante.getNombre(), ingresarNotasEstudiante.getNota()};
                 dtm.addRow(fila);
 
@@ -202,6 +231,7 @@ public class frmNota extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblMensaje;
     private javax.swing.JTable tblRegistro;
     // End of variables declaration//GEN-END:variables
 }

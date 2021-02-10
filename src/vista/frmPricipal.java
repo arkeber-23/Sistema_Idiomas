@@ -9,7 +9,7 @@ public class frmPricipal extends javax.swing.JFrame {
 
     public frmPricipal() {
         initComponents();
-        this.setSize(1310, 700);
+        this.setSize(1310,700);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
     }
@@ -119,7 +119,7 @@ public class frmPricipal extends javax.swing.JFrame {
 
         jMenuItem4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jMenuItem4.setForeground(new java.awt.Color(0, 0, 0));
-        jMenuItem4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/menuIcons/notes.png"))); // NOI18N
+        jMenuItem4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/menuIcons/notas.png"))); // NOI18N
         jMenuItem4.setText("Ingresar Notas");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -166,16 +166,16 @@ public class frmPricipal extends javax.swing.JFrame {
         cargarFurmulario(new frmEstudiantesAprovados(), "Estudiantes Aprobados");
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        // TODO add your handling code here:
+        cargarFurmulario(new frmNota(), "Ingresar Notas");
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         frmCurso ft = new frmCurso();
         ft.setSize(526, 315);
         cargarFurmulario(ft, "Nuevo Curso");
     }//GEN-LAST:event_jMenuItem3ActionPerformed
-
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        // TODO add your handling code here:
-        cargarFurmulario(new frmNota(), "Ingresar Notas");
-    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void cargarFurmulario(JInternalFrame panel, String nombre) {
 
@@ -222,7 +222,9 @@ public class frmPricipal extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new frmPricipal().setVisible(true);
+           
             }
+       
         });
     }
 
@@ -240,4 +242,5 @@ public class frmPricipal extends javax.swing.JFrame {
     private javax.swing.JMenu menuNuevoE;
     // End of variables declaration//GEN-END:variables
 
+    
 }

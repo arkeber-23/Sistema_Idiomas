@@ -7,14 +7,17 @@ import modelo.Nota;
 import static conexionBD.Conexion.*;
 import java.sql.*;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 public class NotaDao {
 
     private static final String SQL_SELECT = "select e.nombre,e.APELLIDO, n.nota from tab_notas n inner join tab_docentes d on d.ID_DOCENTES = n.ID_DOCENTES  inner join tab_estudiantes e on e.ID_ESTU =  n.ID_ESTU WHERE n.nota >=0";
-    private static final String SQL_SELECT_APPROVED = "select e.nombre,e.APELLIDO, n.nota from tab_notas n inner join tab_docentes d on d.ID_DOCENTES= n.ID_DOCENTES  inner join tab_estudiantes e on e.ID_ESTU =  n.ID_ESTU where n.NOTA >= ?";
-    private static final String SQL_SELECT_NOT_APPROVED = "select e.nombre,e.APELLIDO, n.nota from tab_notas n inner join tab_docentes d on d.ID_DOCENTES= n.ID_DOCENTES  inner join tab_estudiantes e on e.ID_ESTU =  n.ID_ESTU where n.NOTA <= ?";
-    private static final String SQL_SELECT_FILTER = "SELECT  e.id_estu, e.nombre FROM tab_cursos c INNER JOIN tab_estudiantes e on c.id_curso = e.id_curso  WHERE c.id_docentes = ? AND c.nivel = ?";
+    private static final String SQL_SELECT_EXISTS = "select count(ID_CURSO) from tab_notas where ID_ESTU = ?";
+    private static final String SQL_SELECT_APPROVED = "select e.nombre,e.APELLIDO, n.nota, c.nivel from tab_notas n  inner join tab_docentes d on d.ID_DOCENTES= n.ID_DOCENTES   inner join tab_estudiantes e on e.ID_ESTU =  n.ID_ESTU  inner join tab_cursos c on c.ID_CURSO = n.ID_CURSO where c.nivel = ? and d.id_docentes = ? and n.NOTA >= ?";
+    private static final String SQL_SELECT_NOT_APPROVED = "select e.nombre,e.APELLIDO, n.nota, c.nivel from tab_notas n  inner join tab_docentes d on d.ID_DOCENTES= n.ID_DOCENTES   inner join tab_estudiantes e on e.ID_ESTU =  n.ID_ESTU  inner join tab_cursos c on c.ID_CURSO = n.ID_CURSO where c.nivel = ? and d.id_docentes = ? and n.NOTA <= ?";
+    private static final String SQL_SELECT_FILTER = "select n.id_nota, e.id_estu, e.nombre, e.apellido, n.nota from tab_docentes d  left join tab_cursos c  on d.id_docentes = c. id_docentes left join tab_estudiantes e on e.ID_CURSO = c.ID_CURSO left join tab_notas n on e.ID_ESTU = n.ID_ESTU where d.ID_DOCENTES = ? and c.NIVEL = ?";
     private static final String SQL_INSERT_NOTA = "INSERT INTO tab_notas(id_curso,id_estu, id_docentes, nota) VALUES (?,?,?,?) ";
+    private static final String SQL_UPDATE = "UPDATE tab_notas SET id_docentes = ?, id_curso = ?, id_estu = ?, nota = ? WHERE id_nota = ?";
 
     public List<Nota> listarEstudiante() {
         Connection conn = null;
@@ -62,17 +65,14 @@ public class NotaDao {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
+                // Traer los datos de las consulta
                 if (!nivel.isEmpty()) {
-//                    int idEstudiante = rs.getInt("e.id_estu");
-//                    String nombreAlumno = rs.getString("e.nombre");
-//                    double nota = rs.getDouble("n.nota");
-//                    _nota = new Nota(nombreAlumno, idEstudiante, nota);
-//                    listaNota.add(_nota);
-
-                int idEstudiante = rs.getInt("e.id_estu");
-                String nombreAlumno = rs.getString("e.nombre");
-                _nota = new Nota(idEstudiante, nombreAlumno);
-                listaNota.add(_nota);
+                    int idNota = rs.getInt("n.id_nota");
+                    int idEstudiante = rs.getInt("e.id_estu");
+                    String nombreAlumno = rs.getString("e.nombre");
+                    double nota = rs.getDouble("n.nota");
+                    _nota = new Nota(nombreAlumno, idEstudiante, nota, idNota);
+                    listaNota.add(_nota);
                 }
             }
 
@@ -104,7 +104,25 @@ public class NotaDao {
         return rs;
     }
 
-    public List<Nota> listarEstudinatesAprobados(int numero) {
+    public int validarNotasDuplicadas(Nota nota) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SQL_SELECT_EXISTS);
+            stmt.setInt(1, nota.getIdEstudinate());
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+        }
+        return 1;
+    }
+
+    public List<Nota> listarEstudinatesAprobados(int numero, String nivel, int idDocente) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -113,7 +131,10 @@ public class NotaDao {
         try {
             conn = getConnection();
             stmt = conn.prepareStatement(SQL_SELECT_APPROVED);
-            stmt.setInt(1, numero);
+            stmt.setString(1, nivel);
+            stmt.setInt(2, idDocente);
+            stmt.setInt(3, numero);
+
             rs = stmt.executeQuery();
             while (rs.next()) {
                 String nombre = rs.getString("e.nombre");
@@ -129,7 +150,7 @@ public class NotaDao {
         return listaNota;
     }
 
-    public List<Nota> listarEstudinatesNoAprobados(int numero) {
+    public List<Nota> listarEstudinatesNoAprobados(int numero, String nivel, int idDocente) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -138,7 +159,9 @@ public class NotaDao {
         try {
             conn = getConnection();
             stmt = conn.prepareStatement(SQL_SELECT_NOT_APPROVED);
-            stmt.setInt(1, numero);
+            stmt.setString(1, nivel);
+            stmt.setInt(2, idDocente);
+            stmt.setInt(3, numero);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 String nombre = rs.getString("e.nombre");
@@ -152,6 +175,29 @@ public class NotaDao {
         }
 
         return listaNota;
+    }
+
+    public int actualizarNota(int idDocente, int idCurso, int idEstudiante, double nota, int idNota) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        int rs = 0;
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SQL_UPDATE);
+            stmt.setInt(1, idDocente);
+            stmt.setInt(2, idCurso);
+            stmt.setInt(3, idEstudiante);
+            stmt.setDouble(4, nota);
+            stmt.setInt(5, idNota);
+            rs = stmt.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+        } finally {
+            close(stmt);
+            close(conn);
+            
+        }
+        return rs;
     }
 
 }

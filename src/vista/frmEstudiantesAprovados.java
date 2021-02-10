@@ -5,24 +5,26 @@
  */
 package vista;
 
+import controlador.CursoDao;
+import controlador.DocenteDao;
 import controlador.NotaDao;
+import java.awt.event.ItemEvent;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
+import modelo.Curso;
+import modelo.Docente;
 import modelo.Nota;
 
-/**
- *
- * @author Sammy Guergachi <sguergachi at gmail.com>
- */
 public class frmEstudiantesAprovados extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form frmEstudiantesAprovados
-     */
+   
     NotaDao notaDao = new NotaDao();
+    DocenteDao docenteDao = new DocenteDao();
+    CursoDao cursoDao = new CursoDao();
 
     public frmEstudiantesAprovados() {
         initComponents();
+        docenteDao.listarCombo(cmbDocente);
         listarEstudantes();
     }
 
@@ -45,10 +47,16 @@ public class frmEstudiantesAprovados extends javax.swing.JInternalFrame {
         rdAprobado = new javax.swing.JRadioButton();
         rdSuple = new javax.swing.JRadioButton();
         btnFilter = new javax.swing.JButton();
+        cmbDocente = new javax.swing.JComboBox<>();
+        cmbCurso = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new java.awt.BorderLayout());
 
+        tblDatosN.setBackground(new java.awt.Color(102, 102, 255));
+        tblDatosN.setForeground(new java.awt.Color(255, 255, 255));
         tblDatosN.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -86,28 +94,62 @@ public class frmEstudiantesAprovados extends javax.swing.JInternalFrame {
             }
         });
 
+        cmbDocente.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbDocenteItemStateChanged(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setText("Docente: ");
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("Curso:");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addContainerGap()
                 .addComponent(rdAprobado)
-                .addGap(84, 84, 84)
+                .addGap(134, 134, 134)
                 .addComponent(rdSuple)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cmbCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cmbDocente, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
                 .addComponent(btnFilter)
-                .addGap(44, 44, 44))
+                .addGap(30, 30, 30))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmbDocente, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmbCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rdAprobado)
-                    .addComponent(rdSuple)
-                    .addComponent(btnFilter, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE))
-                .addContainerGap(26, Short.MAX_VALUE))
+                    .addComponent(rdSuple))
+                .addGap(32, 32, 32))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -115,35 +157,32 @@ public class frmEstudiantesAprovados extends javax.swing.JInternalFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addContainerGap()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(556, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, 0))
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1083, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                .addGap(28, 28, 28))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
         );
 
         pack();
@@ -151,14 +190,24 @@ public class frmEstudiantesAprovados extends javax.swing.JInternalFrame {
 
     private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
         // TODO add your handling code here:
+        int idDocente = cmbDocente.getItemAt(cmbDocente.getSelectedIndex()).getIdDocente();
+        String nivel = cmbCurso.getSelectedItem().toString();
         if (rdAprobado.isSelected()) {
-            listarEstudantesAprobados(7);
+            listarEstudantesAprobados(7, nivel, idDocente);
         }
         if (rdSuple.isSelected()) {
-            listarEstudantesNoAprobados(6);
+            listarEstudantesNoAprobados(6, nivel, idDocente);
         }
 
     }//GEN-LAST:event_btnFilterActionPerformed
+
+    private void cmbDocenteItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbDocenteItemStateChanged
+        // TODO add your handling code here:
+         if (evt.getStateChange() == ItemEvent.SELECTED) {
+            int idDocente = cmbDocente.getItemAt(cmbDocente.getSelectedIndex()).getIdDocente();
+            cursoDao.listarComboNiveles(cmbCurso, idDocente);
+        }
+    }//GEN-LAST:event_cmbDocenteItemStateChanged
 
     public void listarEstudantes() {
         DefaultTableModel dtm = (DefaultTableModel) tblDatosN.getModel();
@@ -170,9 +219,9 @@ public class frmEstudiantesAprovados extends javax.swing.JInternalFrame {
         }
     }
 
-    public void listarEstudantesAprobados(int numero) {
+    public void listarEstudantesAprobados(int numero,String nivel, int idDocente) {
         DefaultTableModel dtm = (DefaultTableModel) tblDatosN.getModel();
-        List<Nota> nota = notaDao.listarEstudinatesAprobados(numero);
+        List<Nota> nota = notaDao.listarEstudinatesAprobados(numero, nivel, idDocente);
         dtm.setRowCount(0);
         for (Nota n : nota) {
             Object[] fila = new Object[]{n.getNombre(), n.getApellido(), n.getNota()};
@@ -180,9 +229,10 @@ public class frmEstudiantesAprovados extends javax.swing.JInternalFrame {
         }
     }
 
-    public void listarEstudantesNoAprobados(int numero) {
+
+    public void listarEstudantesNoAprobados(int numero, String nivel, int idDocente) {
         DefaultTableModel dtm = (DefaultTableModel) tblDatosN.getModel();
-        List<Nota> nota = notaDao.listarEstudinatesNoAprobados(numero);
+        List<Nota> nota = notaDao.listarEstudinatesNoAprobados(numero, nivel, idDocente);
         dtm.setRowCount(0);
         for (Nota n : nota) {
             Object[] fila = new Object[]{n.getNombre(), n.getApellido(), n.getNota()};
@@ -194,6 +244,10 @@ public class frmEstudiantesAprovados extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnFilter;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JComboBox<Curso> cmbCurso;
+    private javax.swing.JComboBox<Docente> cmbDocente;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

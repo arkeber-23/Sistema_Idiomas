@@ -12,12 +12,14 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import modelo.Docente;
 import modelo.FechaJdate;
+
 public class registroDoce extends javax.swing.JInternalFrame {
 
     int id;
     DocenteDao DocenteDao = new DocenteDao();
     FechaJdate setearFecha = new FechaJdate();
     LimpiarCampos lp = new LimpiarCampos();
+
     public registroDoce() {
         initComponents();
         listarDocentes();
@@ -214,6 +216,7 @@ public class registroDoce extends javax.swing.JInternalFrame {
         bntActualizarD.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/menuIcons/update.png"))); // NOI18N
         bntActualizarD.setText("Actualizar");
         bntActualizarD.setToolTipText("Guardar Registro");
+        bntActualizarD.setEnabled(false);
         bntActualizarD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bntActualizarDActionPerformed(evt);
@@ -223,6 +226,7 @@ public class registroDoce extends javax.swing.JInternalFrame {
         btnEliminarD.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/menuIcons/delete.png"))); // NOI18N
         btnEliminarD.setText("Eliminar");
         btnEliminarD.setToolTipText("Guardar Registro");
+        btnEliminarD.setEnabled(false);
         btnEliminarD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEliminarDActionPerformed(evt);
@@ -334,14 +338,13 @@ public class registroDoce extends javax.swing.JInternalFrame {
         String titulo = (String) cmbTituloD.getSelectedItem();
         String genero = (String) cmbGeneroD.getSelectedItem();
         Docente docente = new Docente(titulo, nombre, apellido, cedula, telefono, direccion, edad, genero);
-        int nD = nuevoDocente.registroDocente(docente);
+        nuevoDocente.registroDocente(docente);
         listarDocentes();
         lp.limpiarCamposTexto(jPanel3);
         lp.limpiarCamposTexto(jPanel4);
 
 
     }//GEN-LAST:event_bntGuardarDActionPerformed
-
 
     private void validarNumeros(java.awt.event.KeyEvent evt, JTextField txt) {
         char caracter = evt.getKeyChar();
@@ -382,7 +385,7 @@ public class registroDoce extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtCedulaDKeyTyped
 
     private void bntActualizarDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntActualizarDActionPerformed
-        
+
         if (id != 0) {
             DocenteDao nuevoDocente = new DocenteDao();
             String nombre = txtNombreD.getText();
@@ -393,7 +396,7 @@ public class registroDoce extends javax.swing.JInternalFrame {
             int edad = Integer.parseInt(txtEdadD.getText());
             String titulo = (String) cmbTituloD.getSelectedItem();
             String genero = (String) cmbGeneroD.getSelectedItem();
-            Docente update = new Docente(id, titulo, nombre, apellido, cedula, telefono, direccion, edad,  genero);
+            Docente update = new Docente(id, titulo, nombre, apellido, cedula, telefono, direccion, edad, genero);
             int r = nuevoDocente.actualizarDocente(update);
             if (r > 0) {
                 JOptionPane.showMessageDialog(this, "Datos Actualizados..");
@@ -410,26 +413,23 @@ public class registroDoce extends javax.swing.JInternalFrame {
 
     private void btnEliminarDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarDActionPerformed
         // TODO add your handling code here:
-
         if (id != 0) {
             int opc = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar '" + txtNombreD.getText() + "'?", "Eliminar", JOptionPane.YES_NO_OPTION);
             if (opc == JOptionPane.YES_OPTION) {
                 Docente eliminarD = new Docente(id);
                 DocenteDao.eliminarDocente(eliminarD);
-                listarDocentes();
+
                 lp.limpiarCamposTexto(jPanel3);
                 lp.limpiarCamposTexto(jPanel4);
                 JOptionPane.showMessageDialog(this, "Docente Eliminado.." + txtNombreD.getText());
+                listarDocentes();
                 id = 0;
             }
         } else {
             JOptionPane.showMessageDialog(this, "Por favor seleccione un elemento..");
             lp.limpiarCamposTexto(jPanel3);
             lp.limpiarCamposTexto(jPanel4);
-            id = 0;
         }
-
-
     }//GEN-LAST:event_btnEliminarDActionPerformed
 
     private void btnNuevoDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoDActionPerformed
@@ -442,18 +442,18 @@ public class registroDoce extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnNuevoDActionPerformed
 
     private void tblDocentesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDocentesMouseClicked
-        if (tblDocentes.getSelectedRowCount() > 0) {
-            id = (int) tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 0);
-            txtNombreD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 1).toString());
-            txtApellidoD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 2).toString());
-            txtCedulaD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 3).toString());
-            txtEdadD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 4).toString());
-            txtTelefonoD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 5).toString());
-            cmbTituloD.setSelectedItem(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 6).toString());
-            txtDireccionD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 7).toString());
-            cmbGeneroD.setSelectedItem(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 9).toString());
+        if (tblDocentes.getSelectedRowCount()>0) {
+        id = (int) tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 0);
+        txtNombreD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 1).toString());
+        txtApellidoD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 2).toString());
+        txtCedulaD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 3).toString());
+        txtEdadD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 4).toString());
+        txtTelefonoD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 5).toString());
+        cmbTituloD.setSelectedItem(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 6).toString());
+        txtDireccionD.setText(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 7).toString());
+        cmbGeneroD.setSelectedItem(tblDocentes.getValueAt(tblDocentes.getSelectedRow(), 8).toString());
         }
-        
+
         bntActualizarD.setEnabled(true);
         btnEliminarD.setEnabled(true);
         bntGuardarD.setEnabled(false);

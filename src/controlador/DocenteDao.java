@@ -132,6 +132,11 @@ public class DocenteDao {
             stmt = conn.prepareStatement(SQL_DELETE);
             stmt.setInt(1, docente.getIdDocente());
             rs = stmt.executeUpdate();
+            if (rs>0) {
+                System.out.println("si");
+            }else{
+                System.out.println("no");
+            }
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
         } finally {

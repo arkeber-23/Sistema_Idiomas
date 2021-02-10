@@ -7,7 +7,6 @@ package vista;
 
 import controlador.CursoDao;
 import controlador.DocenteDao;
-import javax.swing.JOptionPane;
 import modelo.Curso;
 import modelo.Docente;
 

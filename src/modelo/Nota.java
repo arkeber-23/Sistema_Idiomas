@@ -18,14 +18,6 @@ public class Nota {
         this.idEstudinate = idEstudinate;
     }
 
-    public String getMateria() {
-        return materia;
-    }
-
-    public void setMateria(String materia) {
-        this.materia = materia;
-    }
-
     public Nota(int idDocente, int idCurso) {
         this.idDocente = idDocente;
         this.idCurso = idCurso;
@@ -36,15 +28,28 @@ public class Nota {
         this.idEstudinate = idEstudinate;
     }
 
-    public Nota(String nombre, int idEstudinate, double nota) {
+    public Nota(int idDocente, int idCurso, int idEstudinate, double nota, int idNota) {
+        this.idEstudinate = idEstudinate;
+        this.idDocente = idDocente;
+        this.idCurso = idCurso;
+        this.nota = nota;
+        this.idNota = idNota;
+    }
+
+    public Nota(String nombre, int idEstudinate, double nota, int idNota) {
         this.nombre = nombre;
         this.idEstudinate = idEstudinate;
         this.nota = nota;
+        this.idNota = idNota;
     }
 
-   
-    
-    
+    public Nota(String nombre, String apellido, double nota, int idNota) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.nota = nota;
+        this.idNota = idNota;
+    }
+
     public Nota(String nombre, String apellido, double nota) {
         this.nombre = nombre;
         this.apellido = apellido;
@@ -112,6 +117,14 @@ public class Nota {
 
     public void setNota(double nota) {
         this.nota = nota;
+    }
+
+    public String getMateria() {
+        return materia;
+    }
+
+    public void setMateria(String materia) {
+        this.materia = materia;
     }
 
     @Override
